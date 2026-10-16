@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2457a7">
+<title>Patents — Explore Them!</title>
+<style>
+:root{--ink:#172554;--blue:#2457a7;--paper:#f8fbff;--line:#dbeafe;--accent:#f59e0b}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#e0f2fe,#fdf2f8 55%,#fef3c7);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);min-height:100vh;padding:14px}
+main{max-width:760px;margin:0 auto;background:#ffffffed;border:1px solid #bfdbfe;border-radius:28px;box-shadow:0 18px 55px #1e3a8a20;overflow:hidden}
+header{padding:26px 18px 20px;text-align:center;background:linear-gradient(120deg,#dbeafe,#fce7f3,#fef3c7)}
+h1{font-size:clamp(2rem,8vw,3.2rem);margin:0;letter-spacing:-1.5px;line-height:1.05}
+header p{font-size:1.1rem;font-weight:750;margin:10px 0 0}
+.content{padding:18px}
+.tags{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.tag{border:2px solid #c7d2fe;background:#fff;border-radius:15px;padding:14px 8px;font-size:1.03rem;font-weight:850;color:#1e3a8a;cursor:pointer;box-shadow:0 3px 0 #dbeafe;transition:transform .12s,background .12s;min-height:76px}
+.tag:active{transform:translateY(2px);box-shadow:none;background:#dbeafe}
+.tag span{display:block;font-size:.77rem;font-weight:550;color:#475569;margin-top:4px;line-height:1.25}
+label{display:block;font-weight:850;margin:22px 0 8px}
+textarea{width:100%;min-height:100px;border:2px solid #93c5fd;border-radius:16px;padding:14px;font:inherit;font-size:1.02rem;resize:vertical;background:#fff}
+textarea:focus{outline:3px solid #bfdbfe;border-color:#2563eb}
+.hint{font-size:.9rem;color:#475569;margin:8px 0 0;line-height:1.45}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+button.primary,button.secondary{border:0;border-radius:14px;padding:13px 17px;font:inherit;font-weight:850;cursor:pointer}
+.primary{background:#1d4ed8;color:white;flex:1;min-width:180px}
+.secondary{background:#e2e8f0;color:#1e293b}
+.preview{margin-top:18px;padding:14px;border-radius:16px;background:#f1f5f9;border:1px solid #cbd5e1}
+.preview h2{font-size:1rem;margin:0 0 8px}
+#queryPreview{font-family:ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere;color:#0f172a;font-size:.9rem}
+.note{font-size:.86rem;line-height:1.5;color:#475569;margin:14px 2px 0}
+footer{padding:15px 18px;text-align:center;background:#f8fafc;color:#64748b;font-size:.82rem}
+@media(min-width:560px){.tags{grid-template-columns:repeat(3,minmax(0,1fr))}.content{padding:26px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>🧠 Patents</h1>
+<p>Explore Them!</p>
+</header>
+<section class="content">
+<div class="tags" aria-label="Patent discovery categories">
+<button class="tag" type="button" data-term="weird">🤪 Weird<span>Odd or unusual ideas</span></button>
+<button class="tag" type="button" data-term="useless">🧱 Useless<span>Apparently impractical inventions</span></button>
+<button class="tag" type="button" data-term="radio-oddity">📻 Radio Oddity<span>Bizarre radio, antenna and wireless uses</span></button>
+<button class="tag" type="button" data-term="funny">😂 Funny<span>Humorous and novelty inventions</span></button>
+<button class="tag" type="button" data-term="nerdy">🤓 Nerdy<span>Technical and scientific ideas</span></button>
+<button class="tag" type="button" data-term="surprising">💡 Surprising<span>Unexpected concepts</span></button>
+</div>
+<label for="words">Enter your search phrase in plain English</label>
+<textarea id="words" placeholder="e.g. an umbrella that protects a person from falling objects"></textarea>
+<p class="hint">Tap a category to search immediately. Or type your own idea and press Search Google Patents.</p>
+<div class="row">
+<button class="primary" id="go" type="button">🔎 Search Google Patents</button>
+<button class="secondary" id="clear" type="button">Clear</button>
+</div>
+<div class="preview" aria-live="polite">
+<h2>🔧 Search query preview</h2>
+<div id="queryPreview">Your Google Patents query will appear here.</div>
+</div>
+<p class="note"><strong>How it works:</strong> category buttons rotate through related keyword sets and immediately open Google Patents in this same tab—no pop-ups. Your browser remembers each category's position. Search results may overlap because Google Patents controls the results and ranking; varied keywords cannot guarantee a completely new set each time.</p>
+</section>
+<footer>Patents — Explore Them! · A curious discovery tool</footer>
+</main>
+<script>
+const words = document.getElementById('words');
+const preview = document.getElementById('queryPreview');
+
+const themeTerms = {
+  weird: [
+    ['unusual','unconventional','novel'],
+    ['odd','peculiar','unexpected'],
+    ['bizarre','curious','uncommon'],
+    ['unorthodox','strange','ingenious']
+  ],
+  useless: [
+    ['impractical','inefficient','nonessential'],
+    ['unnecessary','inconvenient','ineffective'],
+    ['limited utility','poor efficiency','impractical'],
+    ['obsolete','redundant','inefficient']
+  ],
+  'radio-oddity': [
+    ['unusual antenna','unexpected radio application','wireless communication'],
+    ['radio frequency identification','antenna apparatus','unconventional transmitter'],
+    ['radio waves','unexpected use','wireless power transmission'],
+    ['object functioning as antenna','novel antenna design','radio signal'],
+    ['unusual radio receiver','antenna integrated into device','wireless sensing'],
+    ['radio antenna made from everyday object','unconventional radio device','electromagnetic signal']
+  ],
+  funny: [
+    ['humorous','amusing','novelty'],
+    ['comical','entertaining','novelty'],
+    ['prank device','joke apparatus','humorous'],
+    ['novelty gadget','amusing device','comic']
+  ],
+  nerdy: [
+    ['technical','apparatus','system','method'],
+    ['signal processing','electromagnetic','algorithm'],
+    ['sensor','control system','optimization'],
+    ['quantum','robotics','semiconductor'],
+    ['antenna','wireless communication','circuit']
+  ],
+  surprising: [
+    ['unexpected','unconventional','novel'],
+    ['counterintuitive','unorthodox','unusual'],
+    ['unexpected application','novel mechanism','uncommon'],
+    ['unexpected effect','alternative design','innovative']
+  ]
+};
+
+function cleanPhrase(value) {
+  return value.replace(/[(){}\[\]]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function makeQuery(phrase, terms) {
+  const parts = [];
+  const clean = cleanPhrase(phrase);
+  if (clean) parts.push(clean);
+  if (terms && terms.length) {
+    parts.push('(' + [...new Set(terms)].map(term => '"' + term.replace(/"/g, '') + '"').join(' OR ') + ')');
+  }
+  parts.push('(patent OR invention OR apparatus OR device OR method)');
+  return parts.join(' ');
+}
+function showPreview() {
+  const phrase = words.value.trim();
+  preview.textContent = phrase ? makeQuery(phrase, []) : 'Choose a category to search immediately, or enter a phrase above.';
+}
+function goToPatents(query) {
+  window.location.href = 'https://patents.google.com/?q=' + encodeURIComponent(query);
+}
+
+document.querySelectorAll('.tag').forEach(button => {
+  button.addEventListener('click', () => {
+    const category = button.dataset.term;
+    const bundles = themeTerms[category] || [];
+    const key = 'patents-explore-visits-' + category;
+    let visit = 0;
+    try { visit = Number(localStorage.getItem(key) || '0'); } catch (e) {}
+    const bundle = bundles.length ? bundles[visit % bundles.length] : [];
+    try { localStorage.setItem(key, String(visit + 1)); } catch (e) {}
+    goToPatents(makeQuery(words.value, bundle));
+  });
+});
+
+words.addEventListener('input', showPreview);
+document.getElementById('go').addEventListener('click', () => {
+  if (!words.value.trim()) {
+    words.focus();
+    preview.textContent = 'Please enter a search phrase, or tap one of the category buttons.';
+    return;
+  }
+  goToPatents(makeQuery(words.value, []));
+});
+document.getElementById('clear').addEventListener('click', () => {
+  words.value = '';
+  showPreview();
+  words.focus();
+});
+showPreview();
+</script>
+</body>
+</html>
